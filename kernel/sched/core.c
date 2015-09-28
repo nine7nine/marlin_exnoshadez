@@ -3463,9 +3463,9 @@ void __sched schedule_preempt_disabled(void)
 static void preempt_schedule_common(void)
 {
 	do {
-		preempt_active_enter();
+		preempt_disable();
 		__schedule(true);
-		preempt_active_exit();
+		sched_preempt_enable_no_resched();
 
 		/*
 		 * Check again in case we missed a preemption opportunity
@@ -3516,13 +3516,7 @@ asmlinkage __visible void __sched notrace preempt_schedule_notrace(void)
 		return;
 
 	do {
-		/*
-		 * Use raw __prempt_count() ops that don't call function.
-		 * We can't call functions before disabling preemption which
-		 * disarm preemption tracing recursions.
-		 */
-		__preempt_count_add(PREEMPT_ACTIVE + PREEMPT_DISABLE_OFFSET);
-		barrier();
+		preempt_disable_notrace();
 		/*
 		 * Needs preempt disabled in case user_exit() is traced
 		 * and the tracer calls preempt_enable_notrace() causing
@@ -3532,8 +3526,7 @@ asmlinkage __visible void __sched notrace preempt_schedule_notrace(void)
 		__schedule(true);
 		exception_exit(prev_ctx);
 
-		barrier();
-		__preempt_count_sub(PREEMPT_ACTIVE + PREEMPT_DISABLE_OFFSET);
+		preempt_enable_no_resched_notrace();
 	} while (need_resched());
 }
 EXPORT_SYMBOL_GPL(preempt_schedule_notrace);
@@ -3556,11 +3549,11 @@ asmlinkage __visible void __sched preempt_schedule_irq(void)
 	prev_state = exception_enter();
 
 	do {
-		preempt_active_enter();
+		preempt_disable();
 		local_irq_enable();
 		__schedule(true);
 		local_irq_disable();
-		preempt_active_exit();
+		sched_preempt_enable_no_resched();
 	} while (need_resched());
 
 	exception_exit(prev_state);
