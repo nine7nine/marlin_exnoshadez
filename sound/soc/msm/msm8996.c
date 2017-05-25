@@ -3696,10 +3696,10 @@ static struct snd_soc_dai_link msm8996_common_dai_links[] = {
 		.be_id = MSM_FRONTEND_DAI_VOIP,
 	},
 	{
-		.name = "MSM8996 ULL",
+		.name = "MSM8996 ULL_NOIRQ_2",
 		.stream_name = "MultiMedia3",
 		.cpu_dai_name = "MultiMedia3",
-		.platform_name = "msm-pcm-dsp.2",
+		.platform_name = "msm-pcm-dsp-noirq",
 		.dynamic = 1,
 		.async_ops = ASYNC_DPCM_SND_SOC_PREPARE,
 		.dpcm_playback = 1,
