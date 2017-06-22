@@ -138,6 +138,16 @@ config ONESHOT_SYNC_USER
 	help
 	  Provide a userspace API for creating oneshot sync objects.
 
+config ANDROID_BINDER_IPC_SELFTEST
+	bool "Android Binder IPC Driver Selftest"
+	depends on ANDROID_BINDER_IPC
+	---help---
+	  This feature allows binder selftest to run.
+
+	  Binder selftest checks the allocation and free of binder buffers
+	  exhaustively with combinations of various buffer sizes and
+	  alignments.
+
 source "drivers/android/ion/Kconfig"
 
 source "drivers/android/fiq_debugger/Kconfig"
