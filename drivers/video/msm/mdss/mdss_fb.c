@@ -281,26 +281,6 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 	if (value > mfd->panel_info->brightness_max)
 		value = mfd->panel_info->brightness_max;
 
-	/* Check if the current bl is in dim level or not,
-	   except bl = zero */
-	if (mfd->panel_info->bl_dim_check) {
-		bool dim_status = false;
-
-		if ((value > 0) && (value <= mfd->panel_info->bl_dim_check)) {
-			dim_status = true;
-		} else {
-			dim_status = false;
-		}
-
-		if (mfd->panel_info->bl_dim_status != dim_status) {
-			mfd->panel_info->bl_dim_status = dim_status;
-			/* bl_dim_status = true :  dim level
-			   bl_dim_stauts = false : 0 or over dim */
-			htc_battery_backlight_dim_mode_check(mfd->panel_info->bl_dim_status);
-			pr_info("bl_dim_status =%d\n", mfd->panel_info->bl_dim_status);
-		}
-	}
-
 	if (backlight_dimmer) {
 		if (value < 3)
 			bl_lvl = 1;
@@ -684,8 +664,8 @@ static ssize_t mdss_fb_force_panel_dead(struct device *dev,
 		return len;
 	}
 
-	if (kstrtouint(buf, 0, &pdata->panel_info.panel_force_dead))
-		pr_err("kstrtouint buf error!\n");
+	if (sscanf(buf, "%d", &pdata->panel_info.panel_force_dead) != 1)
+		pr_err("sccanf buf error!\n");
 
 	return len;
 }
@@ -798,8 +778,8 @@ static ssize_t mdss_fb_change_dfps_mode(struct device *dev,
 	}
 	pinfo = &pdata->panel_info;
 
-	if (kstrtouint(buf, 0, &dfps_mode)) {
-		pr_err("kstrtouint buf error!\n");
+	if (sscanf(buf, "%d", &dfps_mode) != 1) {
+		pr_err("sccanf buf error!\n");
 		return len;
 	}
 
@@ -2136,7 +2116,7 @@ int mdss_fb_alloc_fb_ion_memory(struct msm_fb_data_type *mfd, size_t fb_size)
 		rc = PTR_ERR(vaddr);
 		goto err_unmap;
 	}
-	pr_debug("alloc 0x%zuB vaddr = %pK for fb%d\n", fb_size,
+	pr_debug("alloc 0x%zuB vaddr = %p for fb%d\n", fb_size,
 			vaddr, mfd->index);
 
 	mfd->fbi->screen_base = (char *) vaddr;
@@ -2153,10 +2133,6 @@ err_put:
 	dma_buf_put(mfd->fbmem_buf);
 fb_mmap_failed:
 	ion_free(mfd->fb_ion_client, mfd->fb_ion_handle);
-	mfd->fb_attachment = NULL;
-	mfd->fb_table = NULL;
-	mfd->fb_ion_handle = NULL;
-	mfd->fbmem_buf = NULL;
 	return rc;
 }
 
@@ -2239,7 +2215,7 @@ static int mdss_fb_fbmem_ion_mmap(struct fb_info *info,
 				vma->vm_page_prot =
 					pgprot_writecombine(vma->vm_page_prot);
 
-			pr_debug("vma=%pK, addr=%x len=%ld\n",
+			pr_debug("vma=%p, addr=%x len=%ld\n",
 					vma, (unsigned int)addr, len);
 			pr_debug("vm_start=%x vm_end=%x vm_page_prot=%ld\n",
 					(unsigned int)vma->vm_start,
@@ -2406,7 +2382,7 @@ static int mdss_fb_alloc_fbmem_iommu(struct msm_fb_data_type *mfd, int dom)
 		return -ERANGE;
 	}
 
-	pr_debug("alloc 0x%zxB @ (%pa phys) (0x%pK virt) (%pa iova) for fb%d\n",
+	pr_debug("alloc 0x%zxB @ (%pa phys) (0x%p virt) (%pa iova) for fb%d\n",
 		 size, &phys, virt, &mfd->iova, mfd->index);
 
 	mfd->fbi->screen_base = virt;
@@ -2694,7 +2670,7 @@ static int mdss_fb_open(struct fb_info *info, int user)
 	}
 
 	mfd->ref_cnt++;
-	pr_debug("mfd refcount:%d file:%pK\n", mfd->ref_cnt, info->file);
+	pr_debug("mfd refcount:%d file:%p\n", mfd->ref_cnt, info->file);
 
 	return 0;
 
@@ -2759,7 +2735,7 @@ static int mdss_fb_release_all(struct fb_info *info, bool release_all)
 		pr_warn("file node not found or wrong ref cnt: release all:%d refcnt:%d\n",
 			release_all, mfd->ref_cnt);
 
-	pr_debug("current process=%s pid=%d mfd->ref=%d file:%pK\n",
+	pr_debug("current process=%s pid=%d mfd->ref=%d file:%p\n",
 		task->comm, current->tgid, mfd->ref_cnt, info->file);
 
 	if (!mfd->ref_cnt || release_all) {
@@ -4216,6 +4192,8 @@ static int mdss_fb_handle_buf_sync_ioctl(struct msm_sync_pt_data *sync_pt_data,
 		goto buf_sync_err_2;
 	}
 
+	sync_fence_install(rel_fence, rel_fen_fd);
+
 	ret = copy_to_user(buf_sync->rel_fen_fd, &rel_fen_fd, sizeof(int));
 	if (ret) {
 		pr_err("%s: copy_to_user failed\n", sync_pt_data->fence_name);
@@ -4252,6 +4230,8 @@ static int mdss_fb_handle_buf_sync_ioctl(struct msm_sync_pt_data *sync_pt_data,
 		goto buf_sync_err_3;
 	}
 
+	sync_fence_install(retire_fence, retire_fen_fd);
+
 	ret = copy_to_user(buf_sync->retire_fen_fd, &retire_fen_fd,
 			sizeof(int));
 	if (ret) {
@@ -4262,11 +4242,7 @@ static int mdss_fb_handle_buf_sync_ioctl(struct msm_sync_pt_data *sync_pt_data,
 		goto buf_sync_err_3;
 	}
 
-	sync_fence_install(retire_fence, retire_fen_fd);
-
 skip_retire_fence:
-	sync_fence_install(rel_fence, rel_fen_fd);
-
 	mutex_unlock(&sync_pt_data->sync_mutex);
 
 	if (buf_sync->flags & MDP_BUF_SYNC_FLAG_WAIT)
