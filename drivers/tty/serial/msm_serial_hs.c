@@ -2746,7 +2746,7 @@ static int uartdm_init_port(struct uart_port *uport)
 	struct msm_hs_port *msm_uport = UARTDM_TO_MSM(uport);
 	struct msm_hs_tx *tx = &msm_uport->tx;
 	struct msm_hs_rx *rx = &msm_uport->rx;
-	struct sched_param param = { .sched_priority = 1 };
+	struct sched_param param = { .sched_priority = 4 };
 
 	init_waitqueue_head(&rx->wait);
 	init_waitqueue_head(&tx->wait);
@@ -2784,6 +2784,7 @@ static int uartdm_init_port(struct uart_port *uport)
 		ret = -ENOMEM;
 		goto exit_lh_init;
 	}
+	sched_setscheduler(tx->task, SCHED_FIFO, &param);
 
 	/* Set up Uart Receive */
 	msm_hs_write(uport, UART_DM_RFWR, 32);
