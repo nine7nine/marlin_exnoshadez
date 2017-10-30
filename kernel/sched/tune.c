@@ -22,7 +22,7 @@ extern struct target_nrg schedtune_target_nrg;
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
 unsigned int top_app_idx = 0;
-int default_topapp_boost = 0;
+int default_topapp_boost = 10;
 struct cgroup_subsys_state *topapp_css;
 #endif /* CONFIG_DYNAMIC_STUNE_BOOST */
 
@@ -620,7 +620,7 @@ dynamic_boost_write(struct cgroup_subsys_state *css, int boost)
 	/* Update CPU boost */
 	schedtune_boostgroup_update(st->idx, st->boost);
 
-	//trace_sched_tune_config(st->boost);
+	
 
 	return 0;
 }
@@ -664,11 +664,7 @@ boost_write(struct cgroup_subsys_state *css, struct cftype *cft,
 	/* Update CPU boost */
 	schedtune_boostgroup_update(st->idx, st->boost);
 
-//	trace_sched_tune_config(st->boost,
-//			threshold_gains[st->perf_boost_idx].nrg_gain,
-//			threshold_gains[st->perf_boost_idx].cap_gain,
-//			threshold_gains[st->perf_constrain_idx].nrg_gain,
-//			threshold_gains[st->perf_constrain_idx].cap_gain);
+
 
 	return 0;
 }
