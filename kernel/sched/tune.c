@@ -22,7 +22,7 @@ extern struct target_nrg schedtune_target_nrg;
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
 unsigned int top_app_idx = 0;
-int default_topapp_boost = 10;
+int default_topapp_boost = 0;
 struct cgroup_subsys_state *topapp_css;
 #endif /* CONFIG_DYNAMIC_STUNE_BOOST */
 

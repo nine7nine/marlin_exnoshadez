@@ -41,7 +41,7 @@ static unsigned int input_boost_ms = 40;
 module_param(input_boost_ms, uint, 0644);
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-static int dynamic_stune_boost = 0;
+static unsigned int dynamic_stune_boost = 0;
 module_param(dynamic_stune_boost, uint, 0644);
 #endif /* CONFIG_DYNAMIC_STUNE_BOOST */
 
