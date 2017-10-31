@@ -507,7 +507,7 @@ static struct ctl_table kern_table[] = {
 		.data		= &sysctl_sched_cfs_boost,
 		.maxlen		= sizeof(sysctl_sched_cfs_boost),
 #ifdef CONFIG_CGROUP_SCHEDTUNE
-		.mode		= 0444,
+		.mode		= 0644,
 #else
 		.mode		= 0644,
 #endif
@@ -2103,7 +2103,15 @@ static int do_proc_dointvec_conv(bool *negp, unsigned long *lvalp,
 				 int write, void *data)
 {
 	if (write) {
-		*valp = *negp ? -*lvalp : *lvalp;
+		if (*negp) {
+			if (*lvalp > (unsigned long) INT_MAX + 1)
+				return -EINVAL;
+			*valp = -*lvalp;
+		} else {
+			if (*lvalp > (unsigned long) INT_MAX)
+				return -EINVAL;
+			*valp = *lvalp;
+		}
 	} else {
 		int val = *valp;
 		if (val < 0) {
