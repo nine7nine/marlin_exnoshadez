@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,6 +21,7 @@
 #include "mdss_debug.h"
 #include "mdss_mdp_trace.h"
 #include "mdss_dsi_clk.h"
+#include <linux/interrupt.h>
 
 #define MAX_RECOVERY_TRIALS 20
 #define MAX_SESSIONS 2
@@ -1876,7 +1877,7 @@ static int mdss_mdp_cmd_wait4pingpong(struct mdss_mdp_ctl *ctl, void *arg)
 	struct mdss_mdp_cmd_ctx *ctx;
 	struct mdss_panel_data *pdata;
 	unsigned long flags;
-	int rc = 0;
+	int rc = 0, te_irq;
 	bool esd_check = false;
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
 
@@ -1936,13 +1937,30 @@ static int mdss_mdp_cmd_wait4pingpong(struct mdss_mdp_ctl *ctl, void *arg)
 			esd_check = true;
 		}
 
-		if (ctx->pp_timeout_report_cnt == MAX_RECOVERY_TRIALS) {
+		/* enable TE irq to check if it is coming from the panel */
+		te_irq = gpio_to_irq(pdata->panel_te_gpio);
+		enable_irq(te_irq);
+
+		/* wait for 20ms to ensure we are getting the next TE */
+		usleep_range(20000, 20010);
+
+		reinit_completion(&pdata->te_done);
+		rc = wait_for_completion_timeout(&pdata->te_done, KOFF_TIMEOUT);
+
+		if (!rc) {
+			MDSS_XLOG(0xbac);
+			mdss_fb_report_panel_dead(ctl->mfd);
+		} else if (ctx->pp_timeout_report_cnt == 0) {
 			MDSS_XLOG(0xbad2);
 			MDSS_XLOG_TOUT_HANDLER("mdp", "dsi0_ctrl", "dsi0_phy",
 				"dsi1_ctrl", "dsi1_phy", "vbif", "vbif_nrt",
 				"dbg_bus", "vbif_dbg_bus", "panic");
 			mdss_fb_report_panel_dead(ctl->mfd);
 		}
+
+		/* disable te irq */
+		disable_irq_nosync(te_irq);
+
 		ctx->pp_timeout_report_cnt++;
 		rc = -EPERM;
 
