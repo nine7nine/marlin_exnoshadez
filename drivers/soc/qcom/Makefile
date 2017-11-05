@@ -2,8 +2,9 @@ KASAN_SANITIZE_scm.o := n
 KCOV_INSTRUMENT_scm.o	:= n
 
 CFLAGS_scm.o :=$(call as-instr,.arch_extension sec,-DREQUIRES_SEC=1)
-CFLAGS_KERNEL := -fno-strict-aliasing
 ccflags-$(CONFIG_MSM_QBT1000) += -Idrivers/misc/
+CFLAGS_ipc_router_hsic_xprt.o := -fno-strict-aliasing
+CFLAGS_ipc_router_smd_xprt.o := -fno-strict-aliasing
 
 obj-$(CONFIG_MSM_INRUSH_CURRENT_MITIGATION) += inrush-current-mitigation.o
 obj-$(CONFIG_MSM_GLADIATOR_ERP) += gladiator_erp.o
