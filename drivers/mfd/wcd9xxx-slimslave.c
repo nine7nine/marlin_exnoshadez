@@ -308,7 +308,7 @@ static void wcd9xxx_slim_tx_auto_recovery_cfg(struct wcd9xxx *wcd9xxx,
 {
 	int ret;
 
-	if (wcd9xxx->codec_type->id_major != TASHA_MAJOR)
+	if (wcd9xxx->codec_type->id_major != TAVIL_MAJOR)
 		return;
 
 	ret = wcd9xxx_interface_reg_write(wcd9xxx,
