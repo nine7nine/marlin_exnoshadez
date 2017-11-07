@@ -10049,7 +10049,7 @@ int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
 		init_entity_runnable_average(se);
 
 		raw_spin_lock_irq(&rq->lock);
-		attach_entity_cfs_rq(se);
+		post_init_entity_util_avg(se);
 		raw_spin_unlock_irq(&rq->lock);
 	}
 
