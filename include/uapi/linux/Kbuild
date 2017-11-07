@@ -20,7 +20,7 @@ header-y += netfilter_ipv4/
 header-y += netfilter_ipv6/
 header-y += usb/
 header-y += wimax/
-header-y += ../../../drivers/staging/android/uapi/
+header-y += ../../../drivers/android/uapi/
 header-y += mfd/
 
 genhdr-y += version.h

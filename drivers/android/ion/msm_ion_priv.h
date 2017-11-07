@@ -1,5 +1,5 @@
 /*
- * drivers/staging/android/ion/msm_ion_priv.h
+ * drivers/android/ion/msm_ion_priv.h
  *
  * Copyright (C) 2011 Google, Inc.
  * Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.

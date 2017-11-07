@@ -24,7 +24,7 @@
 #include <linux/err.h>
 #include <linux/delay.h>
 #include <linux/qpnp/qpnp-haptic.h>
-#include "../../staging/android/timed_output.h"
+#include "../../android/timed_output.h"
 #include <linux/spinlock.h>
 
 #define VIB_DBG_LOG(fmt, ...) \

@@ -138,9 +138,9 @@ config ONESHOT_SYNC_USER
 	help
 	  Provide a userspace API for creating oneshot sync objects.
 
-source "drivers/staging/android/ion/Kconfig"
+source "drivers/android/ion/Kconfig"
 
-source "drivers/staging/android/fiq_debugger/Kconfig"
+source "drivers/android/fiq_debugger/Kconfig"
 
 endif # if ANDROID
 

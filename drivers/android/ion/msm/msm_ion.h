@@ -100,8 +100,8 @@ struct ion_cma_pdata {
 
 #ifdef CONFIG_ION
 /**
- *  msm_ion_client_create - allocate a client using the ion_device specified in
- *				drivers/staging/android/ion/msm/msm_ion.c
+ *  msm_ion_client_create - allocate a cient using the ion_device specified in
+ *				drivers/android/ion/msm/msm_ion.c
  *
  * name is the same as ion_client_create, return values
  * are the same as ion_client_create.

@@ -1,5 +1,5 @@
 /*
- * drivers/staging/android/ion/ion_cma_secure_heap.c
+ * drivers/android/ion/ion_cma_secure_heap.c
  *
  * Copyright (C) Linaro 2012
  * Author: <benjamin.gaignard@linaro.org> for ST-Ericsson.
