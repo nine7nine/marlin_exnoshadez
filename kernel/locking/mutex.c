@@ -566,7 +566,7 @@ __mutex_lock_common(struct mutex *lock, long state, unsigned int subclass,
 		schedule_preempt_disabled();
 		spin_lock_mutex(&lock->wait_lock, flags);
 	}
-	mutex_remove_waiter(lock, &waiter, current_thread_info());
+	mutex_remove_waiter(lock, &waiter, task);
 	/* set it to 0 if there are no waiters left: */
 	if (likely(list_empty(&lock->wait_list)))
 		atomic_set(&lock->count, 0);
