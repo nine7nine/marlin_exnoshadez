@@ -6008,6 +6008,18 @@ static void mem_cgroup_cancel_attach(struct cgroup_subsys_state *css,
 	mem_cgroup_clear_mc();
 }
 
+static int mem_cgroup_allow_attach(struct cgroup_subsys_state *css,
+				   struct cgroup_taskset *tset)
+{
+	return subsys_cgroup_allow_attach(css, tset);
+}
+
+static void mem_cgroup_cancel_attach(struct cgroup_subsys_state *css,
+				     struct cgroup_taskset *tset)
+{
+	mem_cgroup_clear_mc();
+}
+
 static int mem_cgroup_move_charge_pte_range(pmd_t *pmd,
 				unsigned long addr, unsigned long end,
 				struct mm_walk *walk)
@@ -6170,6 +6182,11 @@ static int mem_cgroup_can_attach(struct cgroup_subsys_state *css,
 {
 	return 0;
 }
+static int mem_cgroup_allow_attach(struct cgroup_subsys_state *css,
+				   struct cgroup_taskset *tset)
+{
+	return 0;
+}
 static void mem_cgroup_cancel_attach(struct cgroup_subsys_state *css,
 				     struct cgroup_taskset *tset)
 {
@@ -6204,6 +6221,7 @@ struct cgroup_subsys memory_cgrp_subsys = {
 	.css_reset = mem_cgroup_css_reset,
 	.can_attach = mem_cgroup_can_attach,
 	.cancel_attach = mem_cgroup_cancel_attach,
+	.allow_attach = mem_cgroup_allow_attach,
 	.attach = mem_cgroup_move_task,
 	.bind = mem_cgroup_bind,
 	.legacy_cftypes = mem_cgroup_files,
