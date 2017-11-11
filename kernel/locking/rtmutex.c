@@ -1441,9 +1441,10 @@ rt_mutex_fastunlock(struct rt_mutex *lock,
 		    void (*slowfn)(struct rt_mutex *lock))
 {
 	if (likely(rt_mutex_cmpxchg_release(lock, current, NULL))) {
-		rt_mutex_deadlock_account_unlock(current);
+ 		rt_mutex_deadlock_account_unlock(current);
+	}
 	else
-		slowfn(lock);
+		return	slowfn(lock);
 }
 
 /**
