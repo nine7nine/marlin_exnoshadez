@@ -514,6 +514,11 @@ static void update_dl_entity(struct sched_dl_entity *dl_se,
 		dl_se->deadline = rq_clock(rq) + pi_se->dl_deadline;
 		dl_se->runtime = pi_se->dl_runtime;
 	}
+
+	if (dl_se->dl_yielded)
+		dl_se->dl_yielded = 0;
+	if (dl_se->dl_throttled)
+		dl_se->dl_throttled = 0;
 }
 
 /*
