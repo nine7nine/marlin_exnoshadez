@@ -13,7 +13,8 @@ Oreo-Nov 5
 # Upstream Linux Subsystem pulls / versions
 
 Sched-3.19.0 
-locking-3.18.80
+locking-3.18.80 (No changes for 3.19, only x86)
+workqueues-3.19
 
 ################################################################################
 #
