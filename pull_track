@@ -1,9 +1,7 @@
-################################################################################
-#
-# pull_track = track Marlin kernel changes
-#
-################################################################################
+________________________________________________________________________________
 
+pull_track = track Marlin kernel changes
+________________________________________________________________________________
 
 # Upstream Android and LTS versions
 
@@ -13,14 +11,13 @@ Oreo-Nov 5
 # Upstream Linux Subsystem pulls / versions
 
 Sched-3.19.0 
-locking-3.18.80 (No changes for 3.19, only x86)
-workqueues-3.19
+locking-13.9.0
+workqueues-3.19.0 
 
-################################################################################
-#
-# NOTES
-#
-################################################################################
+________________________________________________________________________________
+
+ NOTES
+________________________________________________________________________________
 
 3.19 Scheduler pulls;
 
@@ -34,4 +31,51 @@ overwrite it.
 
 =>	Similar code could exist in Qualcomm's driver code and should probably 
 	be looked at, at some point.
+
+3.19 Locking
+
+=> 	much of the locking code already exists in Marlin, just grabbed the 
+	remainging bits
+
+3.19 / 4.0 TODO: 
+
+=>	Get the akpm / mm code merged in - more of a challenge. 
+	big changes and conflicts. might have to be very selective.
+________________________________________________________________________________
+
+Commit 39a23beb2dff0df266602786c8dfeffe72103484
+
+removes the queue work on system_power_efficient_wq ...
+
+	#1. we don't need it.
+	#2. it seems to interfere with accuracy in batterystats
+	#3. The polling interval he refers to has been cut in half, 
+	    so these patches are arguably redundant. 
+
+________________________________________________________________________________
+
+EAS integration
+________________________________________________________________________________
+
+commit 42a16646c1669295e2c4fec5dc15228a8a28f4e8
+
+=> 	enabling CONFIG_SCHED_WALT_DEFAULT=y sets the below sysctl values,
+	These can be removed from init.exnoshadez.rc 
+	
+
+#ifdef CONFIG_SCHED_WALT_DEFAULT
+unsigned int sysctl_sched_use_walt_cpu_util = 1;
+unsigned int sysctl_sched_use_walt_task_util = 1;
+
+commit 08c53a651c24ec6350d5ef55c21bee81cd4ca055 (NOT APPLIED!)
+
+UPSTREAM: sched: use load_avg for selecting idlest group
+
+=>	Found in aosp/kernel_common/android-4.9-eas-dev, causes the camera to 
+	crash, this commit may be responsible for crashing with the binder/dev 
+	branch - still to be verified. Do NOT apply
+
+	
+
+
 
