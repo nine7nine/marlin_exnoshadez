@@ -1,4 +1,21 @@
 # Tracking upstream changes that I've pulled in
 
+lts-3.18.80
+Oreo-Nov 5
 Sched-3.19.0 
 locking-3.18.80
+
+# NOTES
+
+3.19 Scheduler pulls;
+
+commit 94f389401c8ce318a34cbb36e2e7941b32da051b
+
+ rfcomm, sched/wait: Fix broken wait construct
+
+rfcomm_run() is a tad broken in that is has a nested wait loop. One
+cannot rely on p->state for the outer wait because the inner wait will
+overwrite it.
+
+=> Similar code could exist in Qualcomm's driver code and should probably be looked at, at some point.
+
