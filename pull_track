@@ -13,7 +13,6 @@ Oreo-Nov 5
 Sched-3.19.0 
 locking-13.9.0
 workqueues-3.19.0 
-
 ________________________________________________________________________________
 
  NOTES
@@ -51,8 +50,7 @@ removes the queue work on system_power_efficient_wq ...
 	#2. it seems to interfere with accuracy in batterystats
 	#3. The polling interval he refers to has been cut in half, 
 	    so these patches are arguably redundant. 
-
-________________________________________________________________________________
+______________________________________________________________________________
 
 EAS integration
 ________________________________________________________________________________
@@ -67,7 +65,16 @@ commit 42a16646c1669295e2c4fec5dc15228a8a28f4e8
 unsigned int sysctl_sched_use_walt_cpu_util = 1;
 unsigned int sysctl_sched_use_walt_task_util = 1;
 
-commit 08c53a651c24ec6350d5ef55c21bee81cd4ca055 (NOT APPLIED!)
+=> 	There are a range of commits in aosp-kernel_common/android-4.4, Oct 27.
+        that still need to be merged for sched/fair around;
+	792510d9b392b392c763c5e395f046d5c246c66e and up....
+
+	For now, I'm not overly worried. Kernel seems really stable. ot running 
+	hot, BatteryStats are accurate, performance is good - but nonetheless; 
+	we want to match android-4.4 kernel and android-4/9-eas-dev, 
+	*as close as possible*.
+
+(*BELOW NOT APPLIED!*)
 
 UPSTREAM: sched: use load_avg for selecting idlest group
 
@@ -75,7 +82,7 @@ UPSTREAM: sched: use load_avg for selecting idlest group
 	crash, this commit may be responsible for crashing with the binder/dev 
 	branch - still to be verified. Do NOT apply
 
-	
+
 
 
 
